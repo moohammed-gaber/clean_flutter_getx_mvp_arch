@@ -3,31 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:patterns/app/modules/login/controllers/login_event.dart';
-import 'package:patterns/app/modules/login/controllers/login_state.dart';
+import 'package:patterns/app/modules/login/controllers/login_handler.dart';
 import 'package:patterns/app/modules/login/value_objects/email_value_object.dart';
 import 'package:patterns/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
 import '../value_objects/password_value_object.dart';
 
-class LoginView extends GetView<LoginController> implements LoginEvent {
+class LoginView extends GetView<LoginController>
+    implements LoginEvent, LoginViewHandler {
   LoginView({Key? key}) : super(key: key);
   final form = GlobalKey<FormState>();
 
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    controller.stateObs.listen((p0) {
-      if (p0.validateStatus == ValidateStatus.inProgress) {
-        final isValid = form.currentState!.validate();
-        if (isValid) {
-          onPressedLogin(controller.state.email, controller.state.password);
-        } else {}
-      }
-    });
     return Obx(() {
       return ModalProgressHUD(
         inAsyncCall: controller.state.isLoading.value,
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              emailController.text = 'admin@admin.com';
+              passwordController.text = '123456';
+            },
+            child: Icon(Icons.home),
+          ),
           appBar: AppBar(
             title: const Text('LoginView'),
             centerTitle: true,
@@ -38,6 +40,7 @@ class LoginView extends GetView<LoginController> implements LoginEvent {
               child: Column(
                 children: [
                   TextFormField(
+                    controller: emailController,
                     validator: (value) {
                       return controller.state.email.value
                           .fold((l) => 'Invalid Email', (r) => null);
@@ -48,6 +51,7 @@ class LoginView extends GetView<LoginController> implements LoginEvent {
                     onChanged: (_) => onEmailChanged(EmailAddress(_)),
                   ),
                   TextFormField(
+                      controller: passwordController,
                       decoration: const InputDecoration(
                         hintText: 'Password',
                       ),
@@ -82,11 +86,26 @@ class LoginView extends GetView<LoginController> implements LoginEvent {
 
   @override
   Future<void> onPressedLogin(EmailAddress email, Password password) async {
-    // final isValid = form.currentState!.validate();
-    // if (isValid) {
-    final result = await controller.onPressedLogin(email, password);
-    result.fold((l) => Get.snackbar('Error', 'Invalid Cred'),
-        (r) => Get.toNamed(Routes.HOME));
-    // }
+    final isValid = form.currentState!.validate();
+    if (isValid) {
+      await controller.onPressedLogin(email, password);
+    }
+  }
+
+  @override
+  void onLoginFailed() {
+    Get.snackbar('Error', 'Invalid Cred');
+  }
+
+  @override
+  void onLoginSuccess() {
+    Get.toNamed(Routes.HOME);
+  }
+
+  @override
+  StatelessElement createElement() {
+    print('LoginView createElement');
+    controller.view = this;
+    return super.createElement();
   }
 }
