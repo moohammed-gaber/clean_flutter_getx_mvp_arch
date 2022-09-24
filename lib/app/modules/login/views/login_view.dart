@@ -9,7 +9,7 @@ import 'package:patterns/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
 import '../value_objects/password_value_object.dart';
-
+bool testMode= true;
 class LoginView extends GetView<LoginController>
     implements LoginEvent, LoginViewHandler {
   LoginView({Key? key}) : super(key: key);
@@ -23,12 +23,15 @@ class LoginView extends GetView<LoginController>
       return ModalProgressHUD(
         inAsyncCall: controller.state.isLoading.value,
         child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              emailController.text = 'admin@admin.com';
-              passwordController.text = '123456';
-            },
-            child: Icon(Icons.home),
+          floatingActionButton: Visibility(
+            visible: testMode,
+            child: FloatingActionButton(
+              onPressed: () {
+                emailController.text = 'admin@admin.com';
+                passwordController.text = '123456';
+              },
+              child: Icon(Icons.home),
+            ),
           ),
           appBar: AppBar(
             title: const Text('LoginView'),
