@@ -11,7 +11,7 @@ import 'package:patterns/app/modules/login/value_objects/password_value_object.d
 class LoginController extends GetxController implements LoginEvent {
   final LoginState state;
   final ILoginRepo repo;
-  late final LoginViewHandler view;
+  late final LoginViewContract viewContract;
   LoginController(
     this.state,
     this.repo,
@@ -29,12 +29,12 @@ class LoginController extends GetxController implements LoginEvent {
 
   @override
   Future<void> onPressedLogin(EmailAddress email, Password password) async {
-    final isValid = view.validate();
+    final isValid = viewContract.validate();
     if (isValid) {
       state.isLoading.value = true;
       final result = await repo.login(email, password);
       state.isLoading.value = false;
-      result.fold((l) => view.onLoginFailed(), (r) => view.onLoginSuccess());
+      result.fold((l) => viewContract.onLoginFailed(), (r) => viewContract.onLoginSuccess());
     }
   }
 }
