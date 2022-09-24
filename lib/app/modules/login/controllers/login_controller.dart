@@ -29,9 +29,12 @@ class LoginController extends GetxController implements LoginEvent {
 
   @override
   Future<void> onPressedLogin(EmailAddress email, Password password) async {
-    state.isLoading.value = true;
-    final result = await repo.login(email, password);
-    state.isLoading.value = false;
-    result.fold((l) => view.onLoginFailed(), (r) => view.onLoginSuccess());
+    final isValid = view.validate();
+    if (isValid) {
+      state.isLoading.value = true;
+      final result = await repo.login(email, password);
+      state.isLoading.value = false;
+      result.fold((l) => view.onLoginFailed(), (r) => view.onLoginSuccess());
+    }
   }
 }

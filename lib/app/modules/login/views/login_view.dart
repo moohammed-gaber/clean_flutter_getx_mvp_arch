@@ -9,12 +9,13 @@ import 'package:patterns/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
 import '../value_objects/password_value_object.dart';
-bool testMode= true;
+
+bool testMode = true;
+
 class LoginView extends GetView<LoginController>
     implements LoginEvent, LoginViewHandler {
   LoginView({Key? key}) : super(key: key);
   final form = GlobalKey<FormState>();
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   @override
@@ -89,10 +90,7 @@ class LoginView extends GetView<LoginController>
 
   @override
   Future<void> onPressedLogin(EmailAddress email, Password password) async {
-    final isValid = form.currentState!.validate();
-    if (isValid) {
-      await controller.onPressedLogin(email, password);
-    }
+    await controller.onPressedLogin(email, password);
   }
 
   @override
@@ -110,5 +108,10 @@ class LoginView extends GetView<LoginController>
     print('LoginView createElement');
     controller.view = this;
     return super.createElement();
+  }
+
+  @override
+  bool validate() {
+    return form.currentState!.validate();
   }
 }

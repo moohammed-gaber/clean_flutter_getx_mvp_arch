@@ -1,4 +1,5 @@
 abstract class LoginViewHandler {
-void onLoginSuccess();
-void onLoginFailed();
+  bool validate();
+  void onLoginSuccess();
+  void onLoginFailed();
 }
