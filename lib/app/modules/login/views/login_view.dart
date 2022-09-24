@@ -10,30 +10,16 @@ import 'package:patterns/app/routes/app_pages.dart';
 import '../controllers/login_controller.dart';
 import '../value_objects/password_value_object.dart';
 
-bool testMode = false;
-
 class LoginView extends GetView<LoginController>
     implements LoginEvent, LoginViewContract {
   LoginView({Key? key}) : super(key: key);
   final form = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return ModalProgressHUD(
         inAsyncCall: controller.state.isLoading.value,
         child: Scaffold(
-          floatingActionButton: Visibility(
-            visible: testMode,
-            child: FloatingActionButton(
-              onPressed: () {
-                emailController.text = 'admin@admin.com';
-                passwordController.text = '123456';
-              },
-              child: Icon(Icons.home),
-            ),
-          ),
           appBar: AppBar(
             title: const Text('LoginView'),
             centerTitle: true,
@@ -44,7 +30,6 @@ class LoginView extends GetView<LoginController>
               child: Column(
                 children: [
                   TextFormField(
-                    controller: emailController,
                     validator: (value) {
                       return controller.state.email.value
                           .fold((l) => 'Invalid Email', (r) => null);
@@ -55,7 +40,6 @@ class LoginView extends GetView<LoginController>
                     onChanged: (_) => onEmailChanged(EmailAddress(_)),
                   ),
                   TextFormField(
-                      controller: passwordController,
                       decoration: const InputDecoration(
                         hintText: 'Password',
                       ),
